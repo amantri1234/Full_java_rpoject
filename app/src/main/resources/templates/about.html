@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | ' + ${companyName}">About Us</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .content-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 40px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+        
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .mission-vision {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .mv-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .mv-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mv-card h3 i {
+            margin-right: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #ddd;
+            color: #777;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #764ba2;
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .content-section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 th:text="${title}">About Us</h1>
+            <p class="subtitle" th:text="${companyName}">Tech Solutions Inc.</p>
+        </header>
+        
+        <!-- Stats Section -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${founded}">2020</div>
+                <div class="stat-label">Founded In</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number" th:text="${employees}">50</div>
+                <div class="stat-label">Team Members</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">
+                    <span th:text="${#dates.createNow().year - founded}">4</span>+
+                </div>
+                <div class="stat-label">Years of Experience</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">100+</div>
+                <div class="stat-label">Projects Delivered</div>
+            </div>
+        </div>
+        
+        <!-- About Content -->
+        <div class="content-section">
+            <h2 class="section-title">Our Story</h2>
+            <div class="about-text">
+                <p>
+                    Founded in <strong th:text="${founded}">2020</strong>, <strong th:text="${companyName}">Tech Solutions Inc.</strong> 
+                    began with a simple mission: to provide innovative technology solutions that help businesses thrive 
+                    in the digital age. What started as a small team of passionate developers has grown into a 
+                    <strong th:text="${employees}">50</strong>-person strong organization serving clients worldwide.
+                </p>
+                
+                <p style="margin-top: 20px;">
+                    Our journey has been marked by continuous learning, adaptation, and a relentless pursuit of 
+                    excellence. We believe in creating technology that not only solves problems but also creates 
+                    opportunities for growth and innovation.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Mission & Vision -->
+        <div class="mission-vision">
+            <div class="mv-card">
+                <h3><i>🎯</i> Our Mission</h3>
+                <p>To empower businesses with cutting-edge technology solutions that drive growth, enhance efficiency, 
+                and create sustainable competitive advantages in an ever-evolving digital landscape.</p>
+            </div>
+            
+            <div class="mv-card">
+                <h3><i>👁️</i> Our Vision</h3>
+                <p>To be the most trusted technology partner for businesses worldwide, recognized for our innovation, 
+                integrity, and unwavering commitment to client success.</p>
+            </div>
+        </div>
+        
+        <!-- Team Culture -->
+        <div class="content-section">
+            <h2 class="section-title">Our Culture</h2>
+            <div class="about-text">
+                <p>
+                    At <span th:text="${companyName}">Tech Solutions Inc.</span>, we foster a culture of collaboration, 
+                    innovation, and continuous improvement. Our team of <span th:text="${employees}">50</span> talented 
+                    professionals brings diverse expertise and perspectives to every project.
+                </p>
+                
+                <p style="margin-top: 20px;">
+                    We believe in creating an environment where creativity flourishes, ideas are valued, and everyone 
+                    has the opportunity to grow both personally and professionally.
+                </p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© <span th:text="${#dates.createNow().year}">2024</span> <span th:text="${companyName}">Tech Solutions Inc.</span> • All Rights Reserved</p>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple animation for stat cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+            
+            statCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

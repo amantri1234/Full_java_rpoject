@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: #667eea;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            margin: 15px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .label {
+            color: #666;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .value {
+            color: #222;
+            font-size: 18px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .student {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .not-student {
+            background: #f44336;
+            color: white;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="avatar">
+            <span th:if="${name}" th:text="${#strings.substring(name,0,1).toUpperCase()}">A</span>
+            <span th:unless="${name}">U</span>
+        </div>
+        
+        <h1>
+            <span th:if="${name}" th:text="${name}">Aman</span>
+            <span th:unless="${name}">User</span>
+        </h1>
+        
+        <div class="info-item">
+            <span class="label">Email</span>
+            <span class="value" th:text="${email} ?: 'Not provided'">amantrivedi@gmail.com</span>
+        </div>
+        
+        <div class="info-item">
+            <span class="label">Location</span>
+            <span class="value" th:text="${location} ?: 'Not provided'">India</span>
+        </div>
+        
+        <div class="info-item">
+            <span class="label">Age</span>
+            <span class="value">
+                <span th:if="${age}" th:text="${age} + ' years'">35 years</span>
+                <span th:unless="${age}">Not provided</span>
+                <span th:if="${age and age >= 18}" style="color: #4CAF50;"> ✓ Adult</span>
+                <span th:if="${age and age < 18}" style="color: #FF9800;"> Minor</span>
+            </span>
+        </div>
+        
+        <div class="info-item">
+            <span class="label">Profession</span>
+            <span class="value" th:text="${hobby} ?: 'Not provided'">Software Engineer</span>
+        </div>
+        
+        <div class="info-item">
+            <span class="label">Student Status</span>
+            <span class="value">
+                <span th:if="${isStudent != null}">
+                    <span th:if="${isStudent}">Student</span>
+                    <span th:if="${not isStudent}">Professional</span>
+                    <span th:if="${isStudent}" class="badge student">STUDENT</span>
+                    <span th:if="${not isStudent}" class="badge not-student">PRO</span>
+                </span>
+                <span th:if="${isStudent == null}">Not specified</span>
+            </span>
+        </div>
+        
+        <div class="footer">
+            Profile loaded successfully • 
+            <span th:text="${#dates.format(#dates.createNow(), 'HH:mm')}">Now</span>
+        </div>
+    </div>
+    
+    <!-- Debug script to check if variables are loaded -->
+    <script th:inline="javascript">
+        console.log("Profile Data Received:");
+        console.log("Name: [[${name}]]");
+        console.log("Email: [[${email}]]");
+        console.log("Age: [[${age}]]");
+    </script>
+</body>
+</html>
