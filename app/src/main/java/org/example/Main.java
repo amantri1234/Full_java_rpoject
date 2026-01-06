@@ -101,5 +101,51 @@ public class Main {
             // Redirect back with success message
             ctx.redirect("/Form?msg=Message sent successfully!");
         });
+
+        app.get("/registration" , ctx ->{
+            Context context = new Context();  // Fixed: use one Context
+            
+            // Get success message from URL parameter
+            String msg = ctx.queryParam("msg");
+            if (msg != null) {
+                context.setVariable("message", msg);
+            }
+            
+            // Get error message from URL parameter
+            String error = ctx.queryParam("error");
+            if (error != null) {
+                context.setVariable("error", error);
+            }
+            String renderedHtml = templateEngine.process("registration", context);
+            ctx.html(renderedHtml);
+        });
+        app.post("/registration", ctx -> {
+            String FirstName = ctx.formParam("firstName");
+            String LastName = ctx.formParam("lastName");
+            String email = ctx.formParam("email");
+            String password = ctx.formParam("password");
+            String ConformPassword = ctx.formParam("confirmPassword");
+            int age = Integer.parseInt(ctx.formParam("age"));
+            String Gender = ctx.formParam("gender");
+            String Hobbies = ctx.formParam("hobbies");
+
+            // Validate the data
+            if (FirstName == null || FirstName.trim().isEmpty()) {
+                // Redirect back with error message
+                ctx.redirect("/registration?error=Username is required!");
+                return;
+            }
+            
+            // Process the data
+            System.out.println("=== REGISTRATION SUBMISSION ===");
+            System.out.println("Username: " + FirstName);
+            System.out.println("Password: " + password);
+            System.out.println("Email: " + email);
+            System.out.println("===============================");
+            
+            // Redirect back with success message
+            
+            ctx.redirect("/registration?msg=Registration successful!");
+        });
     }
 }
