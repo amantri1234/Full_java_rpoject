@@ -5,6 +5,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 public class Main {
     public static void main(String[] args) {
         // 🏗️ BACKEND: Set up Thymeleaf for dynamic templates
