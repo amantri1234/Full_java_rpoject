@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Task - Todo App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .header-left p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 30px;
+            flex: 1;
+        }
+        
+        /* Form Container */
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        
+        /* Form Header */
+        .form-header {
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .form-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .form-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        /* Form Progress */
+        .form-progress {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e1e5ee;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e1e5ee;
+            z-index: 1;
+        }
+        
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 25%;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            background: #e1e5ee;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-circle {
+            background: #4facfe;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .step.active .step-text {
+            color: #4facfe;
+            font-weight: 600;
+        }
+        
+        /* Form Content */
+        .form-content {
+            padding: 40px;
+        }
+        
+        /* Error Message */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 30px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .form-group label .required {
+            color: #dc3545;
+            margin-left: 3px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5ee;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .form-control.error {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        
+        .form-control.success {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        /* Character Counter */
+        .char-counter {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .char-counter.warning {
+            color: #ffc107;
+        }
+        
+        .char-counter.error {
+            color: #dc3545;
+        }
+        
+        /* Textarea */
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        
+        /* Priority Selector */
+        .priority-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .priority-option {
+            position: relative;
+        }
+        
+        .priority-option input {
+            display: none;
+        }
+        
+        .priority-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+            background: #f8f9fa;
+            border: 2px solid #e1e5ee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .priority-option input:checked + .priority-label {
+            border-color: #4facfe;
+            background: #e7f4ff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.2);
+        }
+        
+        .priority-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .priority-high .priority-icon { color: #dc3545; }
+        .priority-medium .priority-icon { color: #ffc107; }
+        .priority-low .priority-icon { color: #28a745; }
+        
+        .priority-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .priority-desc {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* Date Picker */
+        .date-picker {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .date-input {
+            flex: 1;
+        }
+        
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e1e5ee;
+        }
+        
+        .form-btn {
+            padding: 15px 35px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e1e5ee;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Preview Panel */
+        .preview-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 2px dashed #e1e5ee;
+        }
+        
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .preview-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .preview-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+        }
+        
+        .preview-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            font-weight: 600;
+            color: #333;
+            word-break: break-word;
+        }
+        
+        /* Tips Section */
+        .tips-section {
+            background: #e7f4ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid #4facfe;
+        }
+        
+        .tips-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #0062cc;
+        }
+        
+        .tips-list {
+            list-style: none;
+        }
+        
+        .tips-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .tip-icon {
+            color: #4facfe;
+            flex-shrink: 0;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #e1e5ee;
+            border-top: 5px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 1001;
+            display: none;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 20px;
+            animation: bounce 1s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
+            .form-content {
+                padding: 25px;
+            }
+            
+            .priority-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .progress-steps {
+                font-size: 0.8rem;
+            }
+            
+            .date-picker {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>➕ Create New Task</h1>
+                <p>Add a new task to your todo list</p>
+            </div>
+            <div class="header-right">
+                <a href="/tasks" class="nav-btn">
+                    <span>←</span>
+                    Back to Tasks
+                </a>
+                <a href="/dashboard" class="nav-btn">
+                    <span>📊</span>
+                    Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Form Container -->
+        <div class="form-container">
+            <!-- Form Header -->
+            <div class="form-header">
+                <h2>
+                    <span>📝</span>
+                    Create Your Task
+                </h2>
+                <p>Fill in the details below to create a new task</p>
+            </div>
+            
+            <!-- Error Message (for form errors from server) -->
+            <div id="errorMessage" class="error-message" th:if="${error}">
+                <span th:text="${error}"></span>
+            </div>
+            
+            <!-- Form Progress -->
+            <div class="form-progress">
+                <div class="progress-steps">
+                    <div class="step active">
+                        <div class="step-circle">1</div>
+                        <div class="step-text">Basic Info</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">2</div>
+                        <div class="step-text">Details</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">3</div>
+                        <div class="step-text">Priority</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">4</div>
+                        <div class="step-text">Review</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Content -->
+            <div class="form-content">
+                <form id="taskForm" action="/tasks" method="POST">
+                    <!-- Task Title -->
+                    <div class="form-group">
+                        <label for="title">
+                            Task Title <span class="required">*</span>
+                        </label>
+                        <!-- FIXED: Preserve form data on error -->
+                        <input type="text" 
+                               id="title" 
+                               name="title" 
+                               class="form-control" 
+                               placeholder="What needs to be done?"
+                               maxlength="100"
+                               th:value="${title != null} ? ${title} : ''"
+                               required>
+                        <div class="char-counter">
+                            <span id="titleCounter">0</span>/100 characters
+                        </div>
+                    </div>
+                    
+                    <!-- Task Description -->
+                    <div class="form-group">
+                        <label for="description">
+                            Description <span class="required">*</span>
+                        </label>
+                        <!-- FIXED: Preserve form data on error -->
+                        <textarea id="description" 
+                                  name="description" 
+                                  class="form-control" 
+                                  placeholder="Describe the task in detail..."
+                                  maxlength="500"
+                                  rows="4"
+                                  th:text="${description != null} ? ${description} : ''"
+                                  required></textarea>
+                        <div class="char-counter">
+                            <span id="descCounter">0</span>/500 characters
+                        </div>
+                    </div>
+                    
+                    <!-- Priority Selection -->
+                    <div class="form-group">
+                        <label>
+                            Priority <span class="required">*</span>
+                        </label>
+                        <div class="priority-selector">
+                            <!-- High Priority -->
+                            <div class="priority-option priority-high">
+                                <!-- FIXED: Preserve selected priority on error -->
+                                <input type="radio" id="priority-high" name="priority" value="high"
+                                       th:checked="${priority == 'high'}">
+                                <label for="priority-high" class="priority-label">
+                                    <div class="priority-icon">🔥</div>
+                                    <div class="priority-name">High</div>
+                                    <div class="priority-desc">Urgent & Important</div>
+                                </label>
+                            </div>
+                            
+                            <!-- Medium Priority -->
+                            <div class="priority-option priority-medium">
+                                <!-- FIXED: Preserve selected priority on error -->
+                                <input type="radio" id="priority-medium" name="priority" value="medium" 
+                                       th:checked="${priority == null or priority == 'medium'}">
+                                <label for="priority-medium" class="priority-label">
+                                    <div class="priority-icon">⚡</div>
+                                    <div class="priority-name">Medium</div>
+                                    <div class="priority-desc">Important, Not Urgent</div>
+                                </label>
+                            </div>
+                            
+                            <!-- Low Priority -->
+                            <div class="priority-option priority-low">
+                                <!-- FIXED: Preserve selected priority on error -->
+                                <input type="radio" id="priority-low" name="priority" value="low"
+                                       th:checked="${priority == 'low'}">
+                                <label for="priority-low" class="priority-label">
+                                    <div class="priority-icon">🌱</div>
+                                    <div class="priority-name">Low</div>
+                                    <div class="priority-desc">Neither Urgent nor Important</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Due Date (Optional) -->
+                    <div class="form-group">
+                        <label for="dueDate">Due Date (Optional)</label>
+                        <div class="date-picker">
+                            <div class="date-input">
+                                <input type="date" 
+                                       id="dueDate" 
+                                       name="dueDate" 
+                                       class="form-control"
+                                       min="">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="form-btn btn-secondary" onclick="clearForm()">
+                            <span>🗑️</span>
+                            Clear Form
+                        </button>
+                        <button type="submit" class="form-btn btn-primary" id="submitBtn">
+                            <span id="btn-icon">✅</span>
+                            <span id="btn-text">Create Task</span>
+                            <span id="btn-loading" style="display: none;">⏳ Creating...</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Task Preview -->
+                <div class="preview-panel" id="previewPanel">
+                    <div class="preview-header">
+                        <span>👁️</span>
+                        <h3>Task Preview</h3>
+                    </div>
+                    <div class="preview-content">
+                        <div class="preview-item">
+                            <div class="preview-label">Title</div>
+                            <div class="preview-value" id="previewTitle">-</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Priority</div>
+                            <div class="preview-value" id="previewPriority">Medium</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Status</div>
+                            <div class="preview-value" id="previewStatus">Pending</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Description</div>
+                            <div class="preview-value" id="previewDesc">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tips Section -->
+                <div class="tips-section">
+                    <div class="tips-header">
+                        <span>💡</span>
+                        <h3>Tips for Effective Tasks</h3>
+                    </div>
+                    <ul class="tips-list">
+                        <li>
+                            <span class="tip-icon">🎯</span>
+                            <span>Be specific with your task titles</span>
+                        </li>
+                        <li>
+                            <span class="tip-icon">📝</span>
+                            <span>Add detailed descriptions for clarity</span>
+                        </li>
+                        <li>
+                            <span class="tip-icon">⏰</span>
+                            <span>Set realistic priorities and deadlines</span>
+                        </li>
+                        <li>
+                            <span class="tip-icon">🏷️</span>
+                            <span>Use priorities to organize your workflow</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <h3>Creating your task...</h3>
+        <p>Please wait a moment</p>
+    </div>
+    
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        <div class="success-icon">🎉</div>
+        <h2>Task Created Successfully!</h2>
+        <p>Your new task has been added to your todo list.</p>
+        <div style="display: flex; gap: 15px; margin-top: 30px; justify-content: center;">
+            <button class="form-btn btn-secondary" onclick="createAnother()">
+                <span>➕</span>
+                Create Another
+            </button>
+            <button class="form-btn btn-primary" onclick="viewTasks()">
+                <span>📋</span>
+                View Tasks
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Current step
+        let currentStep = 1;
+        
+        // Update character counters
+        function updateCharCounters() {
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const titleCounter = document.getElementById('titleCounter');
+            const descCounter = document.getElementById('descCounter');
+            
+            if (titleInput && titleCounter) {
+                titleCounter.textContent = titleInput.value.length;
+                titleCounter.className = 'char-counter';
+                
+                if (titleInput.value.length > 80) {
+                    titleCounter.classList.add('warning');
+                }
+                if (titleInput.value.length >= 100) {
+                    titleCounter.classList.add('error');
+                }
+            }
+            
+            if (descInput && descCounter) {
+                descCounter.textContent = descInput.value.length;
+                descCounter.className = 'char-counter';
+                
+                if (descInput.value.length > 400) {
+                    descCounter.classList.add('warning');
+                }
+                if (descInput.value.length >= 500) {
+                    descCounter.classList.add('error');
+                }
+            }
+        }
+        
+        // Update task preview
+        function updatePreview() {
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const priorityInput = document.querySelector('input[name="priority"]:checked');
+            const previewTitle = document.getElementById('previewTitle');
+            const previewDesc = document.getElementById('previewDesc');
+            const previewPriority = document.getElementById('previewPriority');
+            
+            if (previewTitle && titleInput) {
+                previewTitle.textContent = titleInput.value || '-';
+            }
+            
+            if (previewDesc && descInput) {
+                previewDesc.textContent = descInput.value || '-';
+            }
+            
+            if (previewPriority && priorityInput) {
+                const priority = priorityInput.value;
+                previewPriority.textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
+                
+                // Update color based on priority
+                previewPriority.style.color = 
+                    priority === 'high' ? '#dc3545' : 
+                    priority === 'medium' ? '#ffc107' : '#28a745';
+            }
+            
+            // Update progress steps based on form completion
+            updateProgressSteps();
+        }
+        
+        // Update progress steps
+        function updateProgressSteps() {
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const steps = document.querySelectorAll('.step');
+            
+            if (!titleInput || !descInput || !steps.length) return;
+            
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
+            
+            // Step 1 is always active
+            steps[0].classList.add('active');
+            
+            // Step 2 active if title is filled
+            if (title.length > 0) {
+                steps[1].classList.add('active');
+            } else {
+                steps[1].classList.remove('active');
+            }
+            
+            // Step 3 active if description is filled
+            if (description.length > 0) {
+                steps[2].classList.add('active');
+            } else {
+                steps[2].classList.remove('active');
+            }
+            
+            // Step 4 active if all required fields are filled
+            if (title.length > 0 && description.length > 0) {
+                steps[3].classList.add('active');
+            } else {
+                steps[3].classList.remove('active');
+            }
+        }
+        
+        // Validate form
+        function validateForm() {
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!titleInput || !descInput || !submitBtn) return false;
+            
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
+            
+            let isValid = true;
+            
+            // Clear previous errors
+            titleInput.classList.remove('error', 'success');
+            descInput.classList.remove('error', 'success');
+            
+            // Validate title
+            if (title.length === 0) {
+                titleInput.classList.add('error');
+                isValid = false;
+            } else if (title.length > 0) {
+                titleInput.classList.add('success');
+            }
+            
+            // Validate description
+            if (description.length === 0) {
+                descInput.classList.add('error');
+                isValid = false;
+            } else if (description.length > 0) {
+                descInput.classList.add('success');
+            }
+            
+            // Update submit button
+            submitBtn.disabled = !isValid;
+            
+            return isValid;
+        }
+        
+        // Clear form
+        function clearForm() {
+            if (confirm('Are you sure you want to clear the form? All entered data will be lost.')) {
+                const form = document.getElementById('taskForm');
+                if (form) {
+                    form.reset();
+                    const dueDate = document.getElementById('dueDate');
+                    if (dueDate) dueDate.value = '';
+                    
+                    updateCharCounters();
+                    updatePreview();
+                    validateForm();
+                    
+                    // Reset progress steps
+                    const steps = document.querySelectorAll('.step');
+                    if (steps.length) {
+                        steps.forEach((step, index) => {
+                            if (index === 0) {
+                                step.classList.add('active');
+                            } else {
+                                step.classList.remove('active');
+                            }
+                        });
+                    }
+                    
+                    // Focus on title
+                    const titleInput = document.getElementById('title');
+                    if (titleInput) titleInput.focus();
+                }
+            }
+        }
+        
+        // Form submission
+        const taskForm = document.getElementById('taskForm');
+        if (taskForm) {
+            taskForm.addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields before submitting.');
+                    return;
+                }
+                
+                // Show loading
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                const submitBtn = document.getElementById('submitBtn');
+                const btnIcon = document.getElementById('btn-icon');
+                const btnText = document.getElementById('btn-text');
+                const btnLoading = document.getElementById('btn-loading');
+                
+                if (submitBtn && btnIcon && btnText && btnLoading) {
+                    // Show loading state
+                    btnIcon.style.display = 'none';
+                    btnText.style.display = 'none';
+                    btnLoading.style.display = 'inline';
+                    submitBtn.style.cursor = 'wait';
+                }
+                
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                }
+                
+                // For demo purposes only - in real app, the form submits normally
+                // Remove this setTimeout in production
+                setTimeout(() => {
+                    if (loadingOverlay) {
+                        loadingOverlay.style.display = 'none';
+                    }
+                    
+                    const successMessage = document.getElementById('successMessage');
+                    if (successMessage) {
+                        successMessage.style.display = 'block';
+                    }
+                    
+                    // Save task data for "Create Another"
+                    const titleInput = document.getElementById('title');
+                    const descInput = document.getElementById('description');
+                    const priorityInput = document.querySelector('input[name="priority"]:checked');
+                    const dueDateInput = document.getElementById('dueDate');
+                    
+                    if (titleInput && descInput && priorityInput) {
+                        const taskData = {
+                            title: titleInput.value,
+                            description: descInput.value,
+                            priority: priorityInput.value,
+                            dueDate: dueDateInput ? dueDateInput.value : ''
+                        };
+                        localStorage.setItem('lastTask', JSON.stringify(taskData));
+                    }
+                    
+                    // Prevent actual submission for demo
+                    e.preventDefault();
+                }, 1500);
+            });
+        }
+        
+        // Success message actions
+        function createAnother() {
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+            clearForm();
+            
+            // Load last task data if exists
+            try {
+                const lastTask = localStorage.getItem('lastTask');
+                if (lastTask) {
+                    const taskData = JSON.parse(lastTask);
+                    const titleInput = document.getElementById('title');
+                    const descInput = document.getElementById('description');
+                    const dueDateInput = document.getElementById('dueDate');
+                    
+                    if (titleInput) titleInput.value = taskData.title + ' (Copy)';
+                    if (descInput) descInput.value = taskData.description;
+                    if (dueDateInput && taskData.dueDate) dueDateInput.value = taskData.dueDate;
+                    
+                    const priorityInput = document.querySelector(`input[value="${taskData.priority}"]`);
+                    if (priorityInput) priorityInput.checked = true;
+                    
+                    updateCharCounters();
+                    updatePreview();
+                    validateForm();
+                }
+                
+                const titleInput = document.getElementById('title');
+                if (titleInput) titleInput.focus();
+            } catch (error) {
+                console.error('Error loading last task:', error);
+            }
+        }
+        
+        function viewTasks() {
+            window.location.href = '/tasks';
+        }
+        
+        // Set minimum date to today
+        function setMinDate() {
+            const dueDateInput = document.getElementById('dueDate');
+            if (dueDateInput) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const minDate = `${yyyy}-${mm}-${dd}`;
+                dueDateInput.min = minDate;
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set min date
+            setMinDate();
+            
+            // Set up event listeners
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const priorityRadios = document.querySelectorAll('input[name="priority"]');
+            const dueDateInput = document.getElementById('dueDate');
+            
+            if (titleInput) {
+                titleInput.addEventListener('input', function() {
+                    updateCharCounters();
+                    updatePreview();
+                    validateForm();
+                });
+            }
+            
+            if (descInput) {
+                descInput.addEventListener('input', function() {
+                    updateCharCounters();
+                    updatePreview();
+                    validateForm();
+                });
+            }
+            
+            if (priorityRadios.length) {
+                priorityRadios.forEach(radio => {
+                    radio.addEventListener('change', updatePreview);
+                });
+            }
+            
+            if (dueDateInput) {
+                dueDateInput.addEventListener('change', updatePreview);
+            }
+            
+            // Initialize counters and preview
+            updateCharCounters();
+            updatePreview();
+            validateForm();
+            
+            // Focus on title field
+            if (titleInput) titleInput.focus();
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + S: Save
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (submitBtn) submitBtn.click();
+                }
+                
+                // Ctrl/Cmd + R: Reset
+                if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                    e.preventDefault();
+                    clearForm();
+                }
+                
+                // Escape: Clear focus
+                if (e.key === 'Escape') {
+                    if (document.activeElement) document.activeElement.blur();
+                }
+            });
+            
+            // Add input animations
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach((input, index) => {
+                input.style.opacity = '0';
+                input.style.transform = 'translateY(10px)';
+                
+                setTimeout(() => {
+                    input.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    input.style.opacity = '1';
+                    input.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // Check for error from server
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage && errorMessage.textContent.trim()) {
+                errorMessage.classList.add('show');
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 5000);
+            }
+        });
+        
+        // Auto-save draft every 30 seconds
+        setInterval(() => {
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const priorityInput = document.querySelector('input[name="priority"]:checked');
+            const dueDateInput = document.getElementById('dueDate');
+            
+            if (titleInput && descInput && priorityInput) {
+                const title = titleInput.value;
+                const description = descInput.value;
+                
+                if (title || description) {
+                    const draft = {
+                        title: title,
+                        description: description,
+                        priority: priorityInput.value,
+                        dueDate: dueDateInput ? dueDateInput.value : '',
+                        timestamp: new Date().toISOString()
+                    };
+                    try {
+                        localStorage.setItem('taskDraft', JSON.stringify(draft));
+                        console.log('Draft auto-saved');
+                    } catch (error) {
+                        console.error('Error saving draft:', error);
+                    }
+                }
+            }
+        }, 30000);
+        
+        // Load draft on page load if exists
+        window.addEventListener('load', function() {
+            try {
+                const draft = localStorage.getItem('taskDraft');
+                if (draft) {
+                    const taskDraft = JSON.parse(draft);
+                    const hoursSinceSave = (new Date() - new Date(taskDraft.timestamp)) / (1000 * 60 * 60);
+                    
+                    if (hoursSinceSave < 24) { // Draft valid for 24 hours
+                        if (confirm('We found an unsaved draft from earlier. Would you like to restore it?')) {
+                            const titleInput = document.getElementById('title');
+                            const descInput = document.getElementById('description');
+                            const dueDateInput = document.getElementById('dueDate');
+                            
+                            if (titleInput) titleInput.value = taskDraft.title || '';
+                            if (descInput) descInput.value = taskDraft.description || '';
+                            if (dueDateInput && taskDraft.dueDate) dueDateInput.value = taskDraft.dueDate;
+                            
+                            if (taskDraft.priority) {
+                                const priorityInput = document.querySelector(`input[value="${taskDraft.priority}"]`);
+                                if (priorityInput) priorityInput.checked = true;
+                            }
+                            
+                            updateCharCounters();
+                            updatePreview();
+                            validateForm();
+                        } else {
+                            localStorage.removeItem('taskDraft');
+                        }
+                    } else {
+                        localStorage.removeItem('taskDraft');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading draft:', error);
+                localStorage.removeItem('taskDraft');
+            }
+        });
+    </script>
+</body>
+</html>

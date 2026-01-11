@@ -3,155 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <!-- FIXED: Added null check for pageTitle -->
+    <title th:text="${pageTitle != null} ? ${pageTitle} : 'Todo App Dashboard'">Todo App Dashboard</title>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 20px;
         }
         
-        .card {
+        .container {
             background: white;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            max-width: 400px;
-            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 1000px;
+            overflow: hidden;
+            margin: 20px 0;
         }
         
-        .avatar {
-            width: 80px;
-            height: 80px;
-            background: #667eea;
-            border-radius: 50%;
+        .header {
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            font-weight: bold;
-            margin: 0 auto 20px;
+            padding: 40px;
+            text-align: center;
         }
         
-        h1 {
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .welcome-section h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-section p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #4facfe;
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .login-icon { color: #4facfe; }
+        .register-icon { color: #764ba2; }
+        .tasks-icon { color: #00b09b; }
+        
+        .card h3 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-register {
+            background: linear-gradient(to right, #764ba2, #667eea);
+        }
+        
+        .btn-tasks {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        .features {
+            background: #f1f3f9;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .features h3 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
         }
         
-        .info-item {
-            margin: 15px 0;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
         }
         
-        .label {
-            color: #666;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 5px;
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
         }
         
-        .value {
-            color: #222;
-            font-size: 18px;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        .student {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .not-student {
-            background: #f44336;
-            color: white;
+        .feature-icon {
+            font-size: 1.8rem;
+            margin-right: 15px;
+            color: #4facfe;
         }
         
         .footer {
             text-align: center;
-            margin-top: 30px;
-            color: #888;
-            font-size: 14px;
+            padding: 25px;
+            color: white;
+            background: rgba(0,0,0,0.1);
+            border-radius: 15px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .notification {
+            background: #00b09b;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            display: none;
+        }
+        
+        .notification.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .action-cards {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="avatar">
-            <span th:if="${name}" th:text="${#strings.substring(name,0,1).toUpperCase()}">A</span>
-            <span th:unless="${name}">U</span>
+    <!-- FIXED: Added null check for msg -->
+    <div th:if="${msg != null}" class="notification show" th:text="${msg}">
+        <!-- Message will appear here -->
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <!-- FIXED: Added null check for appName -->
+            <h1 th:text="${appName != null} ? ${appName} : '📝 My Todo Application'">📝 My Todo Application</h1>
+            <p>Organize your tasks efficiently with our powerful todo management system</p>
         </div>
         
-        <h1>
-            <span th:if="${name}" th:text="${name}">Aman</span>
-            <span th:unless="${name}">User</span>
-        </h1>
-        
-        <div class="info-item">
-            <span class="label">Email</span>
-            <span class="value" th:text="${email} ?: 'Not provided'">amantrivedi@gmail.com</span>
-        </div>
-        
-        <div class="info-item">
-            <span class="label">Location</span>
-            <span class="value" th:text="${location} ?: 'Not provided'">India</span>
-        </div>
-        
-        <div class="info-item">
-            <span class="label">Age</span>
-            <span class="value">
-                <span th:if="${age}" th:text="${age} + ' years'">35 years</span>
-                <span th:unless="${age}">Not provided</span>
-                <span th:if="${age and age >= 18}" style="color: #4CAF50;"> ✓ Adult</span>
-                <span th:if="${age and age < 18}" style="color: #FF9800;"> Minor</span>
-            </span>
-        </div>
-        
-        <div class="info-item">
-            <span class="label">Profession</span>
-            <span class="value" th:text="${hobby} ?: 'Not provided'">Software Engineer</span>
-        </div>
-        
-        <div class="info-item">
-            <span class="label">Student Status</span>
-            <span class="value">
-                <span th:if="${isStudent != null}">
-                    <span th:if="${isStudent}">Student</span>
-                    <span th:if="${not isStudent}">Professional</span>
-                    <span th:if="${isStudent}" class="badge student">STUDENT</span>
-                    <span th:if="${not isStudent}" class="badge not-student">PRO</span>
-                </span>
-                <span th:if="${isStudent == null}">Not specified</span>
-            </span>
-        </div>
-        
-        <div class="footer">
-            Profile loaded successfully • 
-            <span th:text="${#dates.format(#dates.createNow(), 'HH:mm')}">Now</span>
+        <div class="content">
+            <div class="welcome-section">
+                <h2>Welcome to Your Productivity Hub</h2>
+                <p>
+                    A complete task management solution to organize your daily activities, 
+                    set priorities, and track your progress. Everything you need to stay 
+                    productive in one place.
+                </p>
+            </div>
+            
+            <div class="action-cards">
+                <div class="card">
+                    <div class="card-icon login-icon">🔐</div>
+                    <h3>Login to Your Account</h3>
+                    <p>Access your personalized dashboard and continue managing your tasks</p>
+                    <a href="/login" class="btn">Login</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon register-icon">📝</div>
+                    <h3>Create New Account</h3>
+                    <p>Join thousands of users who are organizing their tasks efficiently</p>
+                    <a href="/register" class="btn btn-register">Register Now</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon tasks-icon">✅</div>
+                    <h3>View Tasks</h3>
+                    <p>See all your tasks organized by priority and status</p>
+                    <a href="/tasks" class="btn btn-tasks">View Tasks</a>
+                </div>
+            </div>
+            
+            <div class="features">
+                <h3>🌟 Why Choose Our Todo App?</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <div>
+                            <h4>Fast & Responsive</h4>
+                            <p>Built with Javalin for speed</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <div>
+                            <h4>Secure Database</h4>
+                            <p>SQLite with proper user auth</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📱</div>
+                        <div>
+                            <h4>Mobile Friendly</h4>
+                            <p>Works on all devices</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <div>
+                            <h4>Priority System</h4>
+                            <p>Organize by low/medium/high</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
-    <!-- Debug script to check if variables are loaded -->
-    <script th:inline="javascript">
-        console.log("Profile Data Received:");
-        console.log("Name: [[${name}]]");
-        console.log("Email: [[${email}]]");
-        console.log("Age: [[${age}]]");
+    <div class="footer">
+        <p>Built with ❤️ using Java, Javalin, SQLite & Thymeleaf</p>
+        <p>Version 1.0 | © 2024 Todo Application</p>
+    </div>
+    
+    <script>
+        // Show any message from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+        
+        if (msg) {
+            const notification = document.createElement('div');
+            notification.className = 'notification show';
+            notification.textContent = msg;
+            document.body.prepend(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
     </script>
 </body>
 </html>
