@@ -5,13 +5,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,21 +18,7 @@ public class Main {
         
         Javalin app = Javalin.create();
         app.start(7071);  // Server runs on port 7071
-        String dburl = "jdbc:sqlite:sample.db";
-        try {
-            Connection connection = DriverManager.getConnection(dburl);
-            System.out.println("Database connected successfully.");
-            Statement statement = connection.createStatement();
-            String createTableSQL = """
-                    CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title TEXT NOT NULL,
-                    description TEXT,
-                    completed BOOLEAN DEFAULT FALSE,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-                """;
-        }
+
         // ✅ Route 1: Home page
         app.get("/", ctx -> {
             Context context = new Context();  // Fixed: use one Context
